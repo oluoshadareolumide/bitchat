@@ -91,14 +91,15 @@
 import Foundation
 import BitLogger
 
-extension Data {
-    func trimmingNullBytes() -> Data {
-        // Find the first null byte
-        if let nullIndex = self.firstIndex(of: 0) {
-            return self.prefix(nullIndex)
-        }
-        return self
+/// Trims null-byte padding from UTF-8 string fields (e.g., padded nicknames).
+/// - Warning: Never call this on encrypted payloads, signatures, or raw binary
+///   data — 0x00 bytes are valid and meaningful in those contexts and trimming
+///   will silently corrupt them.
+func trimmingNullPadding() -> Data {
+    if let nullIndex = self.firstIndex(of: 0) {
+        return self.prefix(nullIndex)
     }
+    return self
 }
 
 /// Implements binary encoding and decoding for BitChat protocol messages.
